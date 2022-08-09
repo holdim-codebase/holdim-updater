@@ -16,7 +16,7 @@ const transformProposalToDbFormat = (payload: Payload): Pick<DBProposal, 'id'|'j
 
 const processPayload = async (payload: Payload) => {
   const proposalUpdate = transformProposalToDbFormat(payload)
-  return await repositories.proposal.update({
+  return repositories.proposal.update({
     where: { id: proposalUpdate.id },
     data: proposalUpdate,
   })

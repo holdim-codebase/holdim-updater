@@ -1,4 +1,3 @@
-import { Proposal } from '@prisma/client'
 import { assert } from 'chai'
 import { repositories } from '../src/repositories'
 import { server as fastify } from '../src/server'
@@ -10,7 +9,7 @@ const createPubSubMessageMock = (messageBody: Record<string, any>): { message: {
   },
 })
 
-describe('updater', () => {
+describe('Updater', () => {
   it('Update existing proposal', async () => {
     const proposal = await repositories.proposal.findFirst()
     if (!proposal) {
