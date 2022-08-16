@@ -16,10 +16,14 @@ const transformProposalToDbFormat = (payload: Payload): Pick<DBProposal, 'id'|'j
 
 const processPayload = async (payload: Payload) => {
   const proposalUpdate = transformProposalToDbFormat(payload)
-  return repositories.proposal.update({
+  const proposal = await repositories.proposal.update({
     where: { id: proposalUpdate.id },
     data: proposalUpdate,
   })
+
+  await repositories.$queryRaw`UPDATE "Proposal" SET "issueNumber" = nextval('proposal_issue_counter') WHERE "id" = ${proposal.id}`
+
+  return proposal
 }
 
 fastify.post('/', async (request, reply) => {
