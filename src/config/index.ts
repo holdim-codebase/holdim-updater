@@ -1,10 +1,10 @@
-export enum EEnvironment {
+export enum Environment {
   DEVELOPMENT = 'development',
   PRODUCTION = 'production'
 }
 
 export const config = {
-  environment: process.env.NODE_ENV ?? EEnvironment.DEVELOPMENT,
+  environment: process.env.NODE_ENV ?? Environment.DEVELOPMENT,
   adminApi: {
     url: process.env.ADMIN_API_URL ?? 'https://admin-api.holdim.to',
   },

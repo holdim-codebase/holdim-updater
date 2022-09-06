@@ -1,7 +1,7 @@
 import { Proposal as DBProposal } from '@prisma/client'
 import axios from 'axios'
 
-import { config, EEnvironment } from '../config'
+import { config, Environment } from '../config'
 
 const telegramClient = axios.create({
   baseURL: config.notifier.telegram.botToken,
@@ -24,7 +24,7 @@ _ID:_ ${proposal.id}
 _Title:_ ${proposal.title}
 _Resolve here:_ ${config.adminApi.url}/${proposal.id}`
 
-  if (config.environment === EEnvironment.DEVELOPMENT) {
+  if (config.environment === Environment.DEVELOPMENT) {
     text = `⚠️⚠️⚠️⚠️ TEST ⚠️⚠️⚠️⚠️
 ${text}`
   }

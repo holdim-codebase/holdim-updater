@@ -11,17 +11,37 @@ const createPubSubMessageMock = (messageBody: Record<string, any>): { message: {
 
 describe('Updater', () => {
   it('Update existing proposal', async () => {
-    const proposal = await repositories.proposal.findFirst()
-    if (!proposal) {
+    const dao = await repositories.dao.findFirst()
+    if (!dao) {
       throw new Error('You need to sed your DB')
     }
-    const newJuniorDescription = 'updated'
-    const payload: Payload = {
+
+    const newProposal = {
+      title: 'Test proposal',
+      snapshotId: '12345678',
+      seniorDescription: 'Test senior description',
+      startAt: new Date(),
+      endAt: new Date(),
+      author: 'Vitaliano Buterinio',
+      snapshotLink: 'https://google.com',
+      daoId: dao.id,
+      issueNumber: null,
+    }
+    const proposal = await repositories.proposal.upsert({
+      where: { snapshotId: newProposal.snapshotId },
+      create: newProposal,
+      update: newProposal,
+    })
+
+    // Without `setIssueNumber` flag
+    let newJuniorDescription = `${proposal.juniorDescription ?? ''}updated`
+    let payload: Payload = {
       id: proposal?.id.toString(),
       juniorDescription: newJuniorDescription,
     }
 
     assert.notEqual(proposal.juniorDescription, newJuniorDescription)
+    assert.equal(proposal.issueNumber, null)
     await fastify.inject({
       method: 'POST',
       url: '/',
@@ -30,6 +50,24 @@ describe('Updater', () => {
 
     const proposalAfterUpdate = await repositories.proposal.findUnique({ where: { id: proposal.id } })
     assert.equal(proposalAfterUpdate?.juniorDescription, newJuniorDescription)
-    await repositories.proposal.update({ where: { id: proposal.id }, data: { juniorDescription: proposal.juniorDescription } })
+    assert.equal(proposalAfterUpdate?.issueNumber, null)
+
+    // With `setIssueNumber` flag
+    newJuniorDescription = `${proposalAfterUpdate?.juniorDescription ?? ''}updated`
+    payload = {
+      id: proposal?.id.toString(),
+      juniorDescription: newJuniorDescription,
+      setIssueNumber: true,
+    }
+
+    await fastify.inject({
+      method: 'POST',
+      url: '/',
+      payload: createPubSubMessageMock(payload),
+    })
+
+    const proposalAfterSecondUpdate = await repositories.proposal.findUnique({ where: { id: proposal.id } })
+    assert.equal(proposalAfterSecondUpdate?.juniorDescription, newJuniorDescription)
+    assert.notEqual(proposalAfterSecondUpdate?.issueNumber, null)
   })
 })
