@@ -1,12 +1,13 @@
 
-import fastifyFacotry from 'fastify'
+import fastifyFactory from 'fastify'
 import { logger } from './logging'
 import { repositories } from './repositories'
 import { Payload } from './services/pubsub'
+import { notifyAdminAboutNewProposal } from './services/notifier'
 import { Proposal as DBProposal } from '@prisma/client'
 import crypto from 'crypto'
 
-export const fastify = fastifyFacotry({ logger })
+export const fastify = fastifyFactory({ logger })
 
 const transformProposalToDbFormat = (payload: Payload): Pick<DBProposal, 'id'|'juniorDescription'|'middleDescription'> => ({
   id: Number(payload.id),
@@ -21,7 +22,11 @@ const processPayload = async (payload: Payload) => {
     data: proposalUpdate,
   })
 
-  await repositories.$queryRaw`UPDATE "Proposal" SET "issueNumber" = nextval('proposal_issue_counter') WHERE "id" = ${proposal.id}`
+  if (payload.setIssueNumber) {
+    await repositories.$queryRaw`UPDATE "Proposal" SET "issueNumber" = nextval('proposal_issue_counter') WHERE "id" = ${proposal.id}`
+  } else {
+    await notifyAdminAboutNewProposal(proposal)
+  }
 
   return proposal
 }
