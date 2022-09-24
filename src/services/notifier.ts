@@ -22,7 +22,7 @@ export const notifyAdminAboutNewProposal = async (proposal: DBProposal) => {
   let text = `*New Proposal received from AI*
 _ID:_ ${proposal.id}
 _Title:_ ${proposal.title}
-_Resolve here:_ ${config.adminApi.url}/${proposal.id}`
+_Resolve here:_ ${config.adminApi.url}/proposals/${proposal.id}/review`
 
   if (config.environment === Environment.DEVELOPMENT) {
     text = `⚠️⚠️⚠️⚠️ TEST ⚠️⚠️⚠️⚠️
