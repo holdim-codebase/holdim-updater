@@ -1,4 +1,4 @@
-import { Proposal as DBProposal } from '@prisma/client'
+import { Proposal as DBProposal, Dao as DBDao } from '@prisma/client'
 import axios from 'axios'
 
 import { config, Environment } from '../config'
@@ -18,9 +18,9 @@ const sendTextToAdminChannel = async (text: string): Promise<void> => {
   })
 }
 
-export const notifyAdminAboutNewProposal = async (proposal: DBProposal) => {
+export const notifyAdminAboutNewProposal = async (proposal: DBProposal, daoName: string) => {
   let text = `*New Proposal received from AI*
-_DAO:_ ${proposal.daoId}
+_DAO:_ ${daoName}
 _ID:_ ${proposal.id}
 _Title:_ ${proposal.title}
 _Resolve here:_ ${config.adminApi.url}/proposals/${proposal.id}/review`

@@ -25,7 +25,12 @@ const processPayload = async (payload: Payload) => {
   if (payload.setIssueNumber) {
     await repositories.$queryRaw`UPDATE "Proposal" SET "issueNumber" = nextval('proposal_issue_counter') WHERE "id" = ${proposal.id}`
   } else {
-    await notifyAdminAboutNewProposal(proposal)
+    const dao = await repositories.dao.findFirst({
+      where: {
+        id: proposal.daoId,
+      },
+    })
+    await notifyAdminAboutNewProposal(proposal, dao ? dao.name : 'Unknown')
   }
 
   return proposal
