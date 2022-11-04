@@ -20,6 +20,7 @@ const sendTextToAdminChannel = async (text: string): Promise<void> => {
 
 export const notifyAdminAboutNewProposal = async (proposal: DBProposal) => {
   let text = `*New Proposal received from AI*
+_DAO:_ ${proposal.daoId}
 _ID:_ ${proposal.id}
 _Title:_ ${proposal.title}
 _Resolve here:_ ${config.adminApi.url}/proposals/${proposal.id}/review`
