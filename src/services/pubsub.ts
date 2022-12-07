@@ -1,5 +1,8 @@
 export interface Payload {
-  id: string
-  juniorDescription: string
+  juniorText: string
+  configName: string
+  metadata: {
+    id: string
+  }
   setIssueNumber?: boolean
 }

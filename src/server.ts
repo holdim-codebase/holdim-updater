@@ -10,9 +10,9 @@ import crypto from 'crypto'
 export const fastify = fastifyFactory({ logger })
 
 const transformProposalToDbFormat = (payload: Payload): Pick<DBProposal, 'id'|'juniorDescription'|'middleDescription'> => ({
-  id: Number(payload.id),
-  juniorDescription: payload.juniorDescription,
-  middleDescription: payload.juniorDescription,
+  id: Number(payload.metadata.id),
+  juniorDescription: payload.juniorText,
+  middleDescription: payload.juniorText,
 })
 
 const processPayload = async (payload: Payload) => {
